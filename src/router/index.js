@@ -8,16 +8,23 @@ const router = new Router({
   routes: [
     {
       path: "/",
-      name: "mainComp",
+      name: "mainPage",
       component: function (resolve) {
-        require(["@/components/MainComp.vue"], resolve);
+        require(["@/components/mainPage.vue"], resolve);
       },
     },
     {
-      path: "/hello",
-      name: "hello",
+      path: "/v1",
+      name: "baseComp",
       component: function (resolve) {
-        require(["@/components/HelloWorld.vue"], resolve);
+        require(["@/components/baseComp.vue"], resolve);
+      },
+    },
+    {
+      path: "/v2",
+      name: "vuexComp",
+      component: function (resolve) {
+        require(["@/components/vuexComp.vue"], resolve);
       },
     },
   ],

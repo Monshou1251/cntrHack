@@ -1,49 +1,66 @@
 <template>
-  <div class="container">
-    <div class="grid-item">
-      <div class="item-1">
-        <input
-          v-model="priceNum.value"
-          placeholder="Price"
-          @input="() => handleInputChange('priceNum')"
-        />
-        <div class="label">{{ priceNum.value }}</div>
-      </div>
+  <div>
+    <div class="nav">
+      <router-link to="/" class="button-link">
+        <button class="home-button">Home</button>
+      </router-link>
+      <router-link to="/v1" class="button-link">
+        <button class="basic-button">Basic version</button>
+      </router-link>
+      <router-link to="/v2" class="button-link">
+        <button class="vuex-button">With Vuex</button>
+      </router-link>
     </div>
-
-    <div class="grid-item">
-      <div class="item-2">
-        <input
-          v-model="quantityNum.value"
-          placeholder="Quantity"
-          @input="() => handleInputChange('quantityNum')"
-        />
-        <div class="label">{{ quantityNum.value }}</div>
+    <div class="container">
+      <div class="grid-item">
+        <div class="item-1">
+          <input
+            v-model="priceNum.value"
+            placeholder="Price"
+            @input="() => handleInputChange('priceNum')"
+          />
+          <div class="label">{{ priceNum.value }}</div>
+        </div>
       </div>
-    </div>
 
-    <div class="grid-item">
-      <div class="item-3">
-        <input
-          v-model="sumNum.value"
-          placeholder="Sum"
-          @input="() => handleInputChange('sumNum')"
-        />
-        <div class="label">{{ sumNum.value }}</div>
+      <div class="grid-item">
+        <div class="item-2">
+          <input
+            v-model="quantityNum.value"
+            placeholder="Quantity"
+            @input="() => handleInputChange('quantityNum')"
+          />
+          <div class="label">{{ quantityNum.value }}</div>
+        </div>
       </div>
-    </div>
 
-    <div class="grid-item">
-      <div class="item-4">
-        <button @click="saveData">Button 4</button>
-        <div class="local-state">{{ savedData }}</div>
+      <div class="grid-item">
+        <div class="item-3">
+          <input
+            v-model="sumNum.value"
+            placeholder="Sum"
+            @input="() => handleInputChange('sumNum')"
+          />
+          <div class="label">{{ sumNum.value }}</div>
+        </div>
       </div>
-    </div>
 
-    <div class="log-window">
-      <div class="item-5">
-        <div v-for="(message, index) in logMessages" :key="index" class="event">
-          {{ message.timestamp }} - {{ message.text }}
+      <div class="grid-item">
+        <div class="item-4">
+          <button class="save-button" @click="saveData">Save Data</button>
+          <div class="local-state">{{ savedData }}</div>
+        </div>
+      </div>
+
+      <div class="log-window">
+        <div class="item-5">
+          <div
+            v-for="(message, index) in logMessages"
+            :key="index"
+            class="event"
+          >
+            {{ message.timestamp }} - {{ message.text }}
+          </div>
         </div>
       </div>
     </div>
@@ -65,6 +82,7 @@ export default {
     };
   },
   watch: {
+    // Watchers for debounced changes in numeric input values
     "priceNum.value": debounce(function () {
       this.priceNum.date = new Date();
       this.recalculate(this.priceNum, "priceNum");
@@ -83,20 +101,27 @@ export default {
 
   computed: {},
   methods: {
+    // Method to increment the nonce counter
     incrementNonce() {
       this.nonce++;
     },
+
+    // Method to check if a value is a valid positive number
     isValidPositiveNumber(value) {
       return !isNaN(parseFloat(value)) && isFinite(value) && value >= 0;
     },
+
+    // Method to save data to local storage and update log messages
     saveData() {
       if (
+        // Check if all numeric fields are valid positive numbers
         this.isValidPositiveNumber(this.priceNum.value) &&
         this.isValidPositiveNumber(this.quantityNum.value) &&
         this.isValidPositiveNumber(this.sumNum.value)
       ) {
         if (this.sumNum.value % 2 === 0) {
           setTimeout(() => {
+            // Create a log message with old data from local storage
             const oldLogMessage = {
               timestamp: new Date().toLocaleTimeString(),
               text: `Old data from localStorage was: ${JSON.stringify(
@@ -104,6 +129,7 @@ export default {
               )}`,
             };
 
+            // Prepare data to be saved to local storage
             const dataToSave = {
               priceNum: parseInt(this.priceNum.value, 10),
               quantityNum: parseInt(this.quantityNum.value, 10),
@@ -111,10 +137,13 @@ export default {
               nonce: this.nonce,
             };
 
+            // Save data to local storage
             localStorage.setItem("savedData", JSON.stringify(dataToSave));
 
+            // Update component state with saved data
             this.savedData = { ...dataToSave };
 
+            // Update log messages with old and new log entries
             this.logMessages.unshift(oldLogMessage);
 
             const newLogMessage = {
@@ -126,6 +155,7 @@ export default {
             this.logMessages.unshift(newLogMessage);
           }, 1000);
         } else {
+          // Log message for an invalid sum
           const newLogMessage = {
             timestamp: new Date().toLocaleTimeString(),
             text: `Resulting Sum is not even, data is not saved.`,
@@ -133,6 +163,7 @@ export default {
           this.logMessages.unshift(newLogMessage);
         }
       } else {
+        // Log message for one or more invalid fields
         const errorMessage =
           "One or more fields are not valid positive numbers.";
         const newLogMessage = {
@@ -142,13 +173,15 @@ export default {
         this.logMessages.unshift(newLogMessage);
       }
     },
-
+    // Handling (or validating) input provided by user
     handleInputChange: debounce(function (field) {
+      // Update the date when the field value was changed
       this[field] = {
         value: this[field].value,
         date: new Date().getTime(),
       };
 
+      // Log the field change in the logMessages array
       const logMessage =
         field === "sumNum"
           ? "Sum"
@@ -164,12 +197,15 @@ export default {
       };
       this.logMessages.unshift(newLogMessage);
     }, 300),
+
     isValidNumber(value) {
+      // Check if the value is a valid number
       return !isNaN(parseFloat(value)) && isFinite(value);
     },
-    recalculate(arg, objName) {
-      console.log(`${objName}: ${arg.value}; date: ${arg.date}`);
 
+    // Function to recalculate the values according to new input
+    recalculate(arg, objName) {
+      // Helper function to round a number to two decimal places
       const roundToTwoDecimal = (num) => {
         const rounded = Math.round(num * 100) / 100;
         return Number.isInteger(rounded)
@@ -177,34 +213,36 @@ export default {
           : rounded.toFixed(2);
       };
 
-      if (objName == "priceNum") {
-        console.log("im here priceNum");
-        if (this.quantityNum.value) {
-          console.log("im here");
-          this.sumNum.value = roundToTwoDecimal(
-            this.priceNum.value * this.quantityNum.value
-          );
-        }
+      if (objName === "priceNum" && this.quantityNum.value) {
+        // Recalculate sumNum if priceNum changes
+        this.sumNum.value = roundToTwoDecimal(
+          this.priceNum.value * this.quantityNum.value
+        );
       }
-      if (objName == "quantityNum") {
-        console.log("im here quantityNum");
-        if (this.priceNum.value) {
-          console.log("im here");
-          this.sumNum.value = roundToTwoDecimal(
-            this.priceNum.value * this.quantityNum.value
-          );
-        }
+
+      if (objName === "quantityNum" && this.priceNum.value) {
+        // Recalculate sumNum if quantityNum changes
+        this.sumNum.value = roundToTwoDecimal(
+          this.priceNum.value * this.quantityNum.value
+        );
       }
-      if (objName == "sumNum") {
-        if (this.priceNum.value && this.quantityNum.value) {
-          if (this.priceNum.date > this.quantityNum.date) {
-            this.quantityNum.value = roundToTwoDecimal(
-              this.sumNum.value / this.priceNum.value
-            );
-          } else if (this.priceNum.date <= this.quantityNum.date) {
-            this.priceNum.value = roundToTwoDecimal(
-              this.sumNum.value / this.quantityNum.value
-            );
+
+      if (
+        objName === "sumNum" &&
+        this.priceNum.value &&
+        this.quantityNum.value
+      ) {
+        // Adjust priceNum or quantityNum based on the earliest change date
+        if (this.priceNum.date > this.quantityNum.date) {
+          this.quantityNum.value = roundToTwoDecimal(
+            this.sumNum.value / this.priceNum.value
+          );
+        } else if (this.priceNum.date <= this.quantityNum.date) {
+          this.priceNum.value = roundToTwoDecimal(
+            this.sumNum.value / this.quantityNum.value
+          );
+          if (isNaN(this.priceNum.value)) {
+            this.priceNum.value = 0;
           }
         }
       }
@@ -212,10 +250,12 @@ export default {
   },
 
   created() {
+    // Load saved data from localStorage on component creation
     const savedData = localStorage.getItem("savedData");
     if (savedData) {
       this.savedData = JSON.parse(savedData);
     } else {
+      // Set default values if no saved data is found
       this.savedData = {
         priceNum: 0,
         quantityNum: 0,
@@ -226,6 +266,7 @@ export default {
 
     this.nonce = 0;
 
+    // Periodically increment the nonce every second
     setInterval(() => {
       this.incrementNonce();
     }, 1000);
@@ -235,6 +276,30 @@ export default {
 
 <style scoped>
 @import url("https://fonts.googleapis.com/css?family=Comfortaa:700|Prompt:300");
+
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  color: #ccc;
+  z-index: 1000;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 2px;
+}
+.nav button {
+  font-family: "Prompt", sans-serif;
+  border: none;
+  cursor: pointer;
+}
+.basic-button {
+  height: 100%;
+  background-color: #f95959;
+  color: #fff;
+}
 .container {
   display: grid;
   grid-template-rows: 100px 1fr;
@@ -293,7 +358,7 @@ input::placeholder {
   font-weight: 300;
 }
 
-button {
+.save-button {
   background-color: #f95959;
   color: #fff;
   cursor: pointer;
