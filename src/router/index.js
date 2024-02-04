@@ -5,9 +5,11 @@ Vue.use(Router);
 
 const router = new Router({
   mode: "history",
+
   routes: [
     {
       path: "/",
+      base: "/cntrHack/",
       name: "mainPage",
       component: function (resolve) {
         require(["@/components/mainPage.vue"], resolve);
