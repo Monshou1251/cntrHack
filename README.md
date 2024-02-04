@@ -19,7 +19,7 @@ This project serves as a demonstration of using Vue.js with Vuex for state manag
 1. Clone the repository:
 
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/Monshou1251/cntrHack.git
    ```
 
 2. Navigate to the project directory:
