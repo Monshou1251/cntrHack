@@ -2,6 +2,9 @@
 
 This project is a testing task developed with Vue.js, Vuex, and Vue Router. It is based on Vue 2.x.
 
+## Deploy
+https://monshou1251.github.io/cntrHack/
+
 ## Project Description
 
 This project serves as a demonstration of using Vue.js with Vuex for state management and Vue Router for navigation. It includes basic functionality and demonstrates how to organize components, manage state, and handle routing in a Vue.js application.
